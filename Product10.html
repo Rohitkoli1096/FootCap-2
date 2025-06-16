@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - Nike Air Max 270 SE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f0fff4;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin: 10px;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .cart-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+    }
+
+    .cart-item-details h4 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .cart-item-details p {
+      font-size: 14px;
+      color: #444;
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .quantity select {
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .promo {
+      margin: 20px 0 15px;
+      font-size: 14px;
+    }
+
+    .promo input {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 6px;
+    }
+
+    .price-summary {
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+
+    .price-summary p {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .total {
+      font-weight: 600;
+      color: #000;
+    }
+
+    .checkout-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+      background: #218838;
+    }
+
+    .ssl-note, .footer-info {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-top: 12px;
+    }
+
+    .footer-info {
+      margin-top: 16px;
+    }
+
+    .footer-info img {
+      margin: 0 4px;
+    }
+
+    /* ✅ Toast Style */
+    .toast {
+      visibility: hidden;
+      min-width: 220px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.5s ease, bottom 0.5s ease;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="cart-item">
+      <img src="./assets/images/product-5.jpg" alt="Nike Air Max 270 SE">
+      <div class="cart-item-details">
+        <h4>Nike Air Max 270 SE</h4>
+        <p id="unit-price">₹1200.85</p>
+        <div class="quantity">
+          <label for="qty">Qty:</label>
+          <select id="qty">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo">
+      ➕ Add a promo code
+      <input type="text" id="promo-code" placeholder="Enter code">
+    </div>
+
+    <div class="price-summary">
+      <p><span>Subtotal</span><span id="subtotal">₹1200.85</span></p>
+      <p><span>Shipping</span><span id="shipping">₹8.00</span></p>
+      <p><span>Tax</span><span id="tax">₹30.00</span></p>
+      <p class="total"><span>Total</span><span id="total">₹1238.85</span></p>
+    </div>
+
+    <button class="checkout-btn" onclick="checkout()">Place Order</button>
+
+    <div class="ssl-note">🔒 SSL Secure Payment</div>
+
+    <div class="footer-info">
+      <p>Need help? <a href="#" style="color:#007bff;">Contact Support</a></p>
+      <p>✅ 7-Day Easy Returns</p>
+      <div>
+        <img src="https://img.icons8.com/ios-filled/24/000000/visa.png" alt="Visa">
+        <img src="https://img.icons8.com/ios-filled/24/000000/mastercard.png" alt="MasterCard">
+        <img src="https://img.icons8.com/ios-filled/24/000000/paypal.png" alt="PayPal">
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Toast Message -->
+  <div id="toast" class="toast">✅ Order placed successfully!</div>
+
+  <script>
+    const qty = document.getElementById('qty');
+    const promoInput = document.getElementById('promo-code');
+    const subtotalEl = document.getElementById('subtotal');
+    const taxEl = document.getElementById('tax');
+    const totalEl = document.getElementById('total');
+
+    const unitPrice = 1200.85;
+    const shipping = 8;
+    const fixedTax = 30;
+
+    function formatCurrency(value) {
+      return value.toLocaleString('en-IN', {
+        style: 'currency',
+        currency: 'INR'
+      });
+    }
+
+    function updateCart() {
+      const quantity = parseInt(qty.value);
+      const promo = promoInput.value.trim().toLowerCase();
+      let discount = 0;
+
+      if (promo === "footcap10") {
+        discount = 10;
+      }
+
+      const subtotal = unitPrice * quantity;
+      const total = subtotal + shipping + fixedTax - discount;
+
+      subtotalEl.textContent = formatCurrency(subtotal);
+      taxEl.textContent = formatCurrency(fixedTax);
+      totalEl.textContent = formatCurrency(total);
+    }
+
+    function checkout() {
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+        location.reload();
+      }, 2000);
+    }
+
+    qty.addEventListener('change', updateCart);
+    promoInput.addEventListener('input', updateCart);
+    window.onload = updateCart;
+  </script>
+
+</body>
+</html>
